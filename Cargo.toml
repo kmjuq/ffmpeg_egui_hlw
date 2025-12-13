@@ -1,0 +1,19 @@
+[package]
+name = "ffmpeg_egui_hlw"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+eframe = "0.33.3"
+egui = "0.33.3"
+egui_extras = "0.33.3"
+env_logger = "0.11.8"
+ffmpeg-next = "8.0.0"
+log = "0.4.29"
+rfd = "0.16.0"
+
+[build-dependencies]
+pkg-config = "0.3"
+
+[target.aarch64-apple-darwin]
+rustflags = ["-C", "link-arg=-Wl,-rpath,/opt/homebrew/lib"]
