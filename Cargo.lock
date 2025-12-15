@@ -1286,7 +1286,6 @@ dependencies = [
  "env_logger",
  "ffmpeg-next",
  "log",
- "pkg-config",
  "rfd",
 ]
 

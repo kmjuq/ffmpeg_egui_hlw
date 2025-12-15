@@ -5,8 +5,6 @@ use egui::{Context, FontData, FontDefinitions, FontFamily};
 pub enum FontError {
     /// Font file not found
     NotFound(String),
-    /// Failed to read font file
-    ReadError(std::io::Error),
     /// Platform not supported
     UnsupportedPlatform,
 }
@@ -15,7 +13,6 @@ impl std::fmt::Display for FontError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             FontError::NotFound(path) => write!(f, "Font file not found: {}", path),
-            FontError::ReadError(err) => write!(f, "Failed to read font file: {}", err),
             FontError::UnsupportedPlatform => write!(f, "Platform not supported"),
         }
     }

@@ -1,13 +1,21 @@
-use crate::MyApp;
+#[derive(Default)]
+pub struct State {
+    dropped_files: Vec<egui::DroppedFile>,
+    picked_path: Option<String>,
+}
 
-pub fn file_dialog(myapp: &mut MyApp, ctx: &egui::Context, ui: &mut egui::Ui) {
-    if ui.button("Open file…").clicked()
-        && let Some(path) = rfd::FileDialog::new().pick_file()
-    {
-        myapp.picked_path = Some(path.display().to_string());
-    }
+pub fn component(state: &mut State, ctx: &egui::Context, ui: &mut egui::Ui) {
+    ui.horizontal(|ui| {
+        ui.label("logo图片");
+        if ui.button("Open file…").clicked()
+            && let Some(path) = rfd::FileDialog::new().pick_file()
+        {
+            state.picked_path = Some(path.display().to_string());
+        }
+        ui.end_row();
+    });
 
-    if let Some(picked_path) = &myapp.picked_path {
+    if let Some(picked_path) = &state.picked_path {
         ui.horizontal(|ui| {
             ui.label("Picked file:");
             ui.monospace(picked_path);
@@ -15,11 +23,11 @@ pub fn file_dialog(myapp: &mut MyApp, ctx: &egui::Context, ui: &mut egui::Ui) {
     }
 
     // Show dropped files (if any):
-    if !myapp.dropped_files.is_empty() {
+    if !state.dropped_files.is_empty() {
         ui.group(|ui| {
             ui.label("Dropped files:");
 
-            for file in &myapp.dropped_files {
+            for file in &state.dropped_files {
                 let mut info = if let Some(path) = &file.path {
                     path.display().to_string()
                 } else if !file.name.is_empty() {
@@ -49,7 +57,7 @@ pub fn file_dialog(myapp: &mut MyApp, ctx: &egui::Context, ui: &mut egui::Ui) {
     // Collect dropped files:
     ctx.input(|i| {
         if !i.raw.dropped_files.is_empty() {
-            myapp.dropped_files.clone_from(&i.raw.dropped_files);
+            state.dropped_files.clone_from(&i.raw.dropped_files);
         }
     });
 }

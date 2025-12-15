@@ -4,10 +4,11 @@
 use eframe::egui;
 use ffmpeg_next as ffmpeg;
 
-use crate::font::setup_chinese_fonts;
+use crate::config::font::setup_chinese_fonts;
 
-mod file_dialog;
-mod font;
+mod component;
+mod config;
+mod add_logo_ui;
 
 fn main() -> eframe::Result {
     // 初始化 FFmpeg（自动）
@@ -33,9 +34,7 @@ fn main() -> eframe::Result {
 #[derive(Default)]
 struct MyApp {
     tab: Menu,
-    show_log: bool,
-    dropped_files: Vec<egui::DroppedFile>,
-    picked_path: Option<String>,
+    add_logo_state: add_logo_ui::State,
 }
 
 #[derive(Default, PartialEq)]
@@ -57,9 +56,14 @@ impl MyApp {
 
     fn ui(&mut self, ctx: &egui::Context,ui: &mut egui::Ui) {
         ui.horizontal(|ui| {
-            ui.selectable_value(&mut self.tab, Menu::AddLogo, "Menu::AddLogo");
-            ui.selectable_value(&mut self.tab, Menu::AB, "Menu::AB");
+            ui.selectable_value(&mut self.tab, Menu::AddLogo, "添加水印");
+            ui.selectable_value(&mut self.tab, Menu::AB, "AB融帧");
         });
-        file_dialog::file_dialog(self, ctx, ui);
+        match self.tab {
+            Menu::AddLogo => self.add_logo_state.ui(ctx,ui),
+            _ => () ,
+        }
     }
+
 }
+
