@@ -2,17 +2,16 @@
 #![allow(rustdoc::missing_crate_level_docs)] // it's an example
 
 use eframe::egui;
-use ffmpeg_next as ffmpeg;
 
-use crate::config::font::setup_chinese_fonts;
+use crate::{component::biz::water_mark, config::font::setup_chinese_fonts, view::ab_ui};
 
 mod component;
 mod config;
-mod add_logo_ui;
+mod view;
 
 fn main() -> eframe::Result {
     // 初始化 FFmpeg（自动）
-    ffmpeg::init().expect("无法初始化FFmpeg");
+    // ffmpeg::init().expect("无法初始化FFmpeg");
     env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default(),
@@ -31,39 +30,50 @@ fn main() -> eframe::Result {
     )
 }
 
-#[derive(Default)]
 struct MyApp {
     tab: Menu,
-    add_logo_state: add_logo_ui::State,
+    ab_state: ab_ui::State,
+}
+
+impl Default for MyApp {
+    fn default() -> Self {
+        Self {
+            tab: Menu::AB,
+            ab_state: ab_ui::State {
+                water_mark: water_mark::State {
+                    file_dialog: component::base::file_dialog::State {
+                        pick_type: component::base::file_dialog::PickType::File,
+                        ..Default::default()
+                    },
+                },
+                ..Default::default()
+            },
+        }
+    }
 }
 
 #[derive(Default, PartialEq)]
 enum Menu {
     #[default]
-    AddLogo,
     AB,
 }
 
 impl eframe::App for MyApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            self.ui(ctx,ui);
+            self.ui(ctx, ui);
         });
     }
 }
 
 impl MyApp {
-
-    fn ui(&mut self, ctx: &egui::Context,ui: &mut egui::Ui) {
+    fn ui(&mut self, ctx: &egui::Context, ui: &mut egui::Ui) {
         ui.horizontal(|ui| {
-            ui.selectable_value(&mut self.tab, Menu::AddLogo, "添加水印");
             ui.selectable_value(&mut self.tab, Menu::AB, "AB融帧");
         });
         match self.tab {
-            Menu::AddLogo => self.add_logo_state.ui(ctx,ui),
-            _ => () ,
+            Menu::AB => self.ab_state.ui(ctx, ui),
+            _ => (),
         }
     }
-
 }
-
