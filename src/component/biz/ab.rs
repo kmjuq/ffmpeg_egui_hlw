@@ -12,7 +12,9 @@ impl Default for State {
     fn default() -> Self {
         Self {
             file_dialog: file_dialog::State {
-                pick_type: file_dialog::PickType::File,
+                pick_type: file_dialog::PickType::Files,
+                clear_button_visible: true,
+                copy_button_visible: true,
                 ..Default::default()
             },
         }
@@ -21,6 +23,6 @@ impl Default for State {
 
 impl State {
     pub fn ui(self: &mut State, ctx: &egui::Context, ui: &mut egui::Ui) {
-        file_selector_collapsing_header("添加水印", "选择水印:", &mut self.file_dialog, ctx, ui);
+        file_selector_collapsing_header("融帧设置", "选择多文件:", &mut self.file_dialog, ctx, ui);
     }
 }

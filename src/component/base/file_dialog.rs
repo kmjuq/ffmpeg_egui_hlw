@@ -6,6 +6,8 @@ use crate::component::util::truncate_str_with_ellipsis;
 pub struct State {
     pub picked_files: Option<Vec<PathBuf>>,
     pub pick_type: PickType,
+    pub clear_button_visible: bool,
+    pub copy_button_visible: bool,
 }
 
 #[derive(Debug, Clone, Copy, Default)]
@@ -53,6 +55,24 @@ pub fn component(state: &mut State, _ctx: &egui::Context, ui: &mut egui::Ui) {
             }
         }
     }
+    if state.clear_button_visible && ui.button("清空").clicked() {
+        clear_picked_files(state);
+    }
+    if state.copy_button_visible && ui.button("📋").clicked() {
+        if let Some(picked_files) = &state.picked_files {
+            let all_paths = picked_files
+                .iter()
+                .map(|paths| {
+                    paths
+                        .iter()
+                        .map(|pathbuf| pathbuf.display().to_string())
+                        .collect::<String>()
+                })
+                .collect::<Vec<String>>()
+                .join("\n");
+            ui.ctx().copy_text(all_paths);
+        }
+    }
 }
 
 pub fn file_dialog_selector_show(state: &mut State, _ctx: &egui::Context, ui: &mut egui::Ui) {
@@ -61,9 +81,18 @@ pub fn file_dialog_selector_show(state: &mut State, _ctx: &egui::Context, ui: &m
     state.picked_files.iter().for_each(|files| {
         for file in files {
             let pathbuf_str = file.display().to_string();
-            ui.label(truncate_str_with_ellipsis(&pathbuf_str, 30))
-                .on_hover_text(pathbuf_str);
+            ui.horizontal(|ui| {
+                if ui.button("📋").clicked() {
+                    ui.ctx().copy_text(pathbuf_str.clone());
+                }
+                ui.label(truncate_str_with_ellipsis(&pathbuf_str, 30))
+                    .on_hover_text(pathbuf_str);
+            });
             ui.end_row();
         }
     });
+}
+
+pub fn clear_picked_files(state: &mut State) {
+    state.picked_files = None;
 }

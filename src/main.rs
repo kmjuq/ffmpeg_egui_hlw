@@ -3,8 +3,9 @@
 
 use eframe::egui;
 
-use crate::{component::biz::water_mark, config::font::setup_chinese_fonts, view::ab_ui};
+use crate::{config::font::setup_chinese_fonts, view::ab_ui};
 
+mod biz;
 mod component;
 mod config;
 mod view;
@@ -39,15 +40,7 @@ impl Default for MyApp {
     fn default() -> Self {
         Self {
             tab: Menu::AB,
-            ab_state: ab_ui::State {
-                water_mark: water_mark::State {
-                    file_dialog: component::base::file_dialog::State {
-                        pick_type: component::base::file_dialog::PickType::File,
-                        ..Default::default()
-                    },
-                },
-                ..Default::default()
-            },
+            ab_state: Default::default(),
         }
     }
 }
@@ -73,7 +66,6 @@ impl MyApp {
         });
         match self.tab {
             Menu::AB => self.ab_state.ui(ctx, ui),
-            _ => (),
         }
     }
 }
